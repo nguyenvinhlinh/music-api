@@ -14,3 +14,10 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+$('document').ready(function() {
+  button = $("#search_button");
+  button.click(function(){
+    keyword = $("#keyword").val();
+	location.href="http://localhost:3000/search/init?keyword="+keyword;
+  });
+});
