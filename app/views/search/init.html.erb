@@ -1,2 +1,22 @@
 <h1>Search#init</h1>
 <p>Find me in app/views/search/init.html.erb</p>
+
+<table border="1">
+  <tr>
+	<th>Name</th>
+	<th>Artist</th>
+	<th>Provider</th>
+	<th>Page</th>
+	<th>Source mp3</th>
+  </tr>
+  
+  <% @song_list.each do |song| %>
+  <tr>
+	<td><%= song.name %> </td>
+	<td><%= song.artist %></td>
+	<td><%= song.provider%></td>
+	<td><%= link_to 'link', song.url_page %></td>
+	<td><%= link_to 'link', song.url_source %></td>
+  </tr>
+  <% end %>
+</table>

@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'json'
 class SearchController < ApplicationController
 
-  @song_list = Array.new
+  
   #this part, program will take the input from GET 
   def init
     keyword = ""
@@ -11,7 +11,8 @@ class SearchController < ApplicationController
     source_nhaccuatui = false
     keyword = params[:keyword]
     source = params[:source]
-    
+    @song_list = Array.new
+
     if source.eql?("zing")
       source_zingmp3 = true
     elsif source.eql?("nhaccuatui")
@@ -28,8 +29,13 @@ class SearchController < ApplicationController
     Rails.logger.debug "Zing: #{source_zingmp3}"
     Rails.logger.debug "Nhaccuatui: #{source_nhaccuatui}"
 
-    exploit_zing(keyword)
-   # exploit_nct(keyword)
+    if(source_zingmp3 == true)
+      @song_list = @song_list + (exploit_zing(keyword))
+    end
+    if(source_nhaccuatui == true)
+
+    end
+    
   end
 
   def exploit_zing(keyword)
@@ -39,17 +45,28 @@ class SearchController < ApplicationController
     page_doc = Nokogiri::HTML(open('http://m.mp3.zing.vn/tim-kiem/bai-hat.html?q='+ keyword))
     #Analyze the data to take name, artist, url
     Rails.logger.debug "Number of results: #{page_doc.css("div.section-specsong a").size}"
+    song_list = []
     page_doc.css("div.section-specsong a").each do |node|
       name = node.css('h3')[0].text
       artist = node.css('h4')[0].text
       url = "http://m.mp3.zing.vn"+ node['href']
       source_mp3 = get_source_zing(url)
-      Rails.logger.debug "Name: #{name}, Artist: #{artist}, Url: #{url}, File mp3: #{source_mp3}"
+
+      song = Song.new
+      song.name = name
+      song.artist = artist
+      song.url_page = url
+      song.url_source = source_mp3
+      song.provider = "zing mp3"
+      song_list.push(song)
+      #Rails.logger.debug "Name: #{name}, Artist: #{artist}, Url: #{url}, File mp3: #{source_mp3}"
     end
+    return song_list
   end
 
   def exploit_nct(keyword)
     Rails.logger.debug "Keyword: #{keyword}"
+    
   end
 
   def get_source_zing(url)
