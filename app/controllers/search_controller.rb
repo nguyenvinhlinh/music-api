@@ -6,13 +6,19 @@ class SearchController < ApplicationController
   
   #this part, program will take the input from GET 
   def init
-    keyword = ""
     source_zingmp3 = false
     source_nhaccuatui = false
     keyword = params[:keyword]
+    if keyword == nil || keyword == ""
+      Rails.logger.debug "---------------bug here true empty #{keyword}"
+      return
+    end
+    
+    
+    
     source = params[:source]
     @song_list = Array.new
-
+    
     if source.eql?("zing")
       source_zingmp3 = true
     elsif source.eql?("nhaccuatui")
@@ -33,9 +39,7 @@ class SearchController < ApplicationController
       @song_list = @song_list + (exploit_zing(keyword))
     end
     if(source_nhaccuatui == true)
-
     end
-    
   end
 
   def exploit_zing(keyword)

@@ -2,7 +2,7 @@
 <input id="keyword" type="text" name="keyword"/>
 <button id="search_button"type="button">Search </button>
 
-
+<% if @song_list != nil%>
 <table border="1">
   <tr>
 	<th>Name</th>
@@ -11,7 +11,6 @@
 	<th>Page</th>
 	<th>Source mp3</th>
   </tr>
-  
   <% @song_list.each do |song| %>
   <tr>
 	<td><%= song.name %> </td>
@@ -22,3 +21,4 @@
   </tr>
   <% end %>
 </table>
+<% end %>
