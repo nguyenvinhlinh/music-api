@@ -1,71 +1,74 @@
 require 'open-uri'
 require 'nokogiri'
 require 'json'
-class SearchController < ApplicationController
+class Song 
+  @name = ""
+  @artist = ""
+  @lyric = ""
+  @url_page = ""
+  @url_source = ""
+  @provider = ""
+  attr_accessor :name, :artist, :lyric, :url_page, :url_source,  :provider  
+end
 
-  
+class SearchController < ApplicationController
   #this part, program will take the input from GET 
   def init
-    source_zingmp3 = false
-    source_nhaccuatui = false
-    keyword = params[:keyword]
-    if keyword == nil || keyword == ""
-      Rails.logger.debug "---------------bug here true empty #{keyword}"
+    _source_zingmp3 = false
+    _source_nhaccuatui = false
+    _keyword = params[:keyword]
+    if _keyword == nil || _keyword == ""
+      Rails.logger.debug "---------------bug here true empty #{_keyword}"
       return
     end
-    
-    
-    
     source = params[:source]
     @song_list = Array.new
-    
     if source.eql?("zing")
-      source_zingmp3 = true
+      _source_zingmp3 = true
     elsif source.eql?("nhaccuatui")
-      source_nhaccuatui = true
+      _source_nhaccuatui = true
     elsif source.eql?(nil)
-      source_nhaccuatui = true
-      source_zingmp3 = true
+      _source_nhaccuatui = true
+      _source_zingmp3 = true
     else
-      source_nhaccuatui = false
-      source_zingmp3 = false
+      _source_nhaccuatui = false
+      _source_zingmp3 = false
     end
     
-    Rails.logger.debug "Keyword: #{keyword}"
-    Rails.logger.debug "Zing: #{source_zingmp3}"
-    Rails.logger.debug "Nhaccuatui: #{source_nhaccuatui}"
+    Rails.logger.debug "Keyword: #{_keyword}"
+    Rails.logger.debug "Zing: #{_source_zingmp3}"
+    Rails.logger.debug "Nhaccuatui: #{_source_nhaccuatui}"
 
-    if(source_zingmp3 == true)
-      @song_list = @song_list + (exploit_zing(keyword))
+    if(_source_zingmp3 == true)
+      @song_list = @song_list + (exploit_zing(_keyword))
     end
-    if(source_nhaccuatui == true)
+    if(_source_nhaccuatui == true)
     end
   end
 
   def exploit_zing(keyword)
-    word = keyword
-    word.gsub!(' ', '+')
-    Rails.logger.debug "Method: exploit_zing -- Keyword: #{word}"
-    page_doc = Nokogiri::HTML(open('http://m.mp3.zing.vn/tim-kiem/bai-hat.html?q='+ keyword))
+    _word = keyword
+    _word.gsub!(' ', '+')
+    Rails.logger.debug "Method: exploit_zing -- Keyword: #{_word}"
+    _page_doc = Nokogiri::HTML(open('http://m.mp3.zing.vn/tim-kiem/bai-hat.html?q='+ _word))
     #Analyze the data to take name, artist, url
-    Rails.logger.debug "Number of results: #{page_doc.css("div.section-specsong a").size}"
-    song_list = []
-    page_doc.css("div.section-specsong a").each do |node|
-      name = node.css('h3')[0].text
-      artist = node.css('h4')[0].text
-      url = "http://m.mp3.zing.vn"+ node['href']
-      source_mp3 = get_source_zing(url)
-
-      song = Song.new
-      song.name = name
-      song.artist = artist
-      song.url_page = url
-      song.url_source = source_mp3
-      song.provider = "zing mp3"
-      song_list.push(song)
+    Rails.logger.debug "Number of results: #{_page_doc.css("div.section-specsong a").size}"
+    _song_list = []
+    _page_doc.css("div.section-specsong a").each do |node|
+      _name = node.css('h3')[0].text
+      _artist = node.css('h4')[0].text
+      _url = "http://m.mp3.zing.vn"+ node['href']
+      _source_mp3 = get_source_zing(_url)
+      _song = Song.new
+      _song.name = _name
+      _song.artist = _artist
+      _song.url_page = _url
+      _song.url_source = _source_mp3
+      _song.provider = "zing mp3"
+      _song_list.push(_song)
       #Rails.logger.debug "Name: #{name}, Artist: #{artist}, Url: #{url}, File mp3: #{source_mp3}"
     end
-    return song_list
+    return _song_list
   end
 
   def exploit_nct(keyword)
@@ -74,22 +77,28 @@ class SearchController < ApplicationController
   end
 
   def get_source_zing(url)
-    page_doc = Nokogiri::HTML(open(url))
-    source_xml = page_doc.css('div#mp3Player').first['xml']
-    page_xml = Nokogiri::HTML(open(source_xml))
-    content_xml = page_xml.css('body').first.content
-    json_object = JSON.parse(content_xml);
+    _page_doc = Nokogiri::HTML(open(url))
+    _source_xml = _page_doc.css('div#mp3Player').first['xml']
+    _page_xml = Nokogiri::HTML(open(_source_xml))
+    _content_xml = _page_xml.css('body').first.content
+    _json_object = JSON.parse(_content_xml);
     #detach the array within JSON object
-    array_of_data = json_object['data']
-    s = array_of_data.to_s
-    i = s.rindex('http://')
-    j = s.rindex('="')
-    mp3_source_fake = s[i..j]
+    _array_of_data = _json_object['data']
+    _s = _array_of_data.to_s
+    _i = _s.rindex('http://')
+    _j = _s.rindex('"}]')
+    _k = _s.rindex('", "hq"=>"require vip"}]')
+    
+    Rails.logger.debug "first pos: #{_i}, last pos1: #{_j}, last pos2: #{_k}, content: #{_s}, detach: #{_s[_i.._j-1]} "
     #page_fake = Nokogiri::HTML(open(mp3_source_fake))
     #Rails.logger.debug page_fake
+    if _k == nil
+      _mp3_source_fake = _s[_i.._j-1]
+    else
+      _mp3_source_fake = _s[_i.._k-1]
+    end
     
    # Rails.logger.debug "#{s}, #{i}, #{j}, #{mp3_source}"
-    return mp3_source_fake
   end
   
   
