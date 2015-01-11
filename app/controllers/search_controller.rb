@@ -143,15 +143,10 @@ class SearchController < ApplicationController
     _songPage = "http://mp3.zing.vn#{_songName[0]['href']}" 
     puts _songPage
     #song's source
-    yield
-    
-    #puts _html_document.css('div[class = "first-search-song"] > script').text
+    puts _html_document.css('div[class = "first-search-song"] > script')[0].text
     
     #solve class first-search-song
     #solve class content-block special-song
   end
-  collectingDataFromResponseZing(response){
-      puts "in block"
-  }
 end
 
