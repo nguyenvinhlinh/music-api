@@ -31,12 +31,13 @@ class SearchController < ApplicationController
     Rails.logger.debug "Nhaccuatui: #{_source_nhaccuatui}"
 
     if(_source_zingmp3 == true)
-      @song_list = @song_list + (exploit_zing(_keyword))
+#      @song_list = @song_list + (exploit_zing(_keyword))
+      mp3zing_sendRequest(_keyword, 14)
     end
     if(_source_nhaccuatui == true)
     end
   end
-
+  
   def exploit_zing(keyword)
     _word = keyword
     _word.gsub!(' ', '+')
@@ -108,5 +109,22 @@ class SearchController < ApplicationController
     return _uri.to_s
     
   end
+
+  def mp3zing_sendRequest(query, numberOfResult = 20)
+    _numberOfResultPerPage = 20
+    _keyword = query.gsub(' ', '+')
+    puts "Number of expected results: #{numberOfResult}"
+    puts "Number of pages: #{numberOfResult / _numberOfResultPerPage}, Mod: #{numberOfResult % _numberOfResultPerPage}"
+    if (numberOfResult % _numberOfRe = Net::HTTP.get_response(URI(_url))
+      puts "#{i+1}, #{_response.code}"
+    end
+  end
+
+  def collectingDataFromResponseZing(response)
+  end
+  
+  
+
   
 end
+
