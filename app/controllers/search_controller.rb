@@ -115,8 +115,16 @@ class SearchController < ApplicationController
     _keyword = query.gsub(' ', '+')
     puts "Number of expected results: #{numberOfResult}"
     puts "Number of pages: #{numberOfResult / _numberOfResultPerPage}, Mod: #{numberOfResult % _numberOfResultPerPage}"
-    if (numberOfResult % _numberOfRe = Net::HTTP.get_response(URI(_url))
-      puts "#{i+1}, #{_response.code}"
+    if (numberOfResult % _numberOfResultPerPage == 0)
+      _number_of_page = numberOfResult / _numberOfResultPerPage
+    else
+      _number_of_page = numberOfResult / _numberOfResultPerPage +1
+    end
+    puts "Number of pages: #{_number_of_page}"
+    for i in 1.._number_of_page
+      _url = "http://mp3.zing.vn/tim-kiem/bai-hat.html?q=#{_keyword}&p=#{i+1}"
+      _response = Net::HTTP.get_response(URI(_url))
+      puts "#{i}, #{_response.code}"
     end
   end
 
