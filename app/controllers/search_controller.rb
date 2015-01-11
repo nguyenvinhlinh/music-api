@@ -32,7 +32,7 @@ class SearchController < ApplicationController
 
     if(_source_zingmp3 == true)
 #      @song_list = @song_list + (exploit_zing(_keyword))
-      mp3zing_sendRequest(_keyword, 14)
+      mp3zing_sendRequest(_keyword, 24)
     end
     if(_source_nhaccuatui == true)
     end
@@ -122,17 +122,36 @@ class SearchController < ApplicationController
     end
     puts "Number of pages: #{_number_of_page}"
     for i in 1.._number_of_page
-      _url = "http://mp3.zing.vn/tim-kiem/bai-hat.html?q=#{_keyword}&p=#{i+1}"
+      _url = "http://mp3.zing.vn/tim-kiem/bai-hat.html?q=#{_keyword}&p=#{i}"
       _response = Net::HTTP.get_response(URI(_url))
-      puts "#{i}, #{_response.code}"
+      
+      puts "#{i}, #{_response.code} \n"
+      collectingDataFromResponseZing(_response)
     end
   end
 
-  def collectingDataFromResponseZing(response)
-  end
-  
-  
 
-  
+  def collectingDataFromResponseZing(response)
+    _html_document = Nokogiri::HTML(response.body)
+    #song's name
+    _songName = _html_document.css('div[class=first-search-song] > h3 > a')
+    puts _songName[0].text
+    #song's singers
+    _songSinger = _html_document.css('div[class=first-search-song] > p > a')
+    puts _songSinger[0].text
+    #song's page url
+    _songPage = "http://mp3.zing.vn#{_songName[0]['href']}" 
+    puts _songPage
+    #song's source
+    yield
+    
+    #puts _html_document.css('div[class = "first-search-song"] > script').text
+    
+    #solve class first-search-song
+    #solve class content-block special-song
+  end
+  collectingDataFromResponseZing(response){
+      puts "in block"
+  }
 end
 
