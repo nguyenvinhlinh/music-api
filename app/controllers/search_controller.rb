@@ -1,16 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'json'
-class Song 
-  @name = ""
-  @artist = ""
-  @lyric = ""
-  @url_page = ""
-  @url_source = ""
-  @provider = ""
-  attr_accessor :name, :artist, :lyric, :url_page, :url_source,  :provider  
-end
-
+require 'net/http'
 class SearchController < ApplicationController
   #this part, program will take the input from GET 
   def init
@@ -97,9 +88,25 @@ class SearchController < ApplicationController
     else
       _mp3_source_fake = _s[_i.._k-1]
     end
-    
+
+  #  return find_direct_url(_mp3_source_fake)
    # Rails.logger.debug "#{s}, #{i}, #{j}, #{mp3_source}"
   end
-  
+
+  def find_direct_url(url)
+    _uri = URI(url)
+    _response = Net::HTTP.get_response(_uri)
+    _statusCode = _response.code
+    if _statusCode.eql?("403")
+      return url 
+    end
+    while(_statusCode.eql?("302"))
+      _uri = URI(_response['location'])
+      _response = Net::HTTP.get_response(_uri)
+      _statusCode = _response.code
+    end
+    return _uri.to_s
+    
+  end
   
 end
