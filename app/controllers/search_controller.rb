@@ -32,7 +32,7 @@ class SearchController < ApplicationController
 
     if(_source_zingmp3 == true)
 #      @song_list = @song_list + (exploit_zing(_keyword))
-      mp3zing_sendRequest(_keyword, 24)
+      mp3zing_sendRequest(_keyword, 20)
     end
     if(_source_nhaccuatui == true)
     end
@@ -143,10 +143,21 @@ class SearchController < ApplicationController
     _songPage = "http://mp3.zing.vn#{_songName[0]['href']}" 
     puts _songPage
     #song's source
-    puts _html_document.css('div[class = "first-search-song"] > script')[0].text
+    _songSource =  _html_document.css('div[class = "first-search-song"] > script')[0].text
+    detachURLFromScript(_songSource)
     
     #solve class first-search-song
     #solve class content-block special-song
+  end
+
+  def detachURLFromScript(text)
+    puts text
+    _startIndex =  text.index('href="')
+    _endIndex = text.index('"', _startIndex+6)
+#    puts "#{text[_startIndex]}, #{_startIndex}"
+#    puts "#{text[_endIndex]}, #{_endIndex}"
+    puts text[_startIndex+6, _endIndex - _startIndex - 6]
+    return text[_startIndex+6, _endIndex - _startIndex - 6]
   end
 end
 
