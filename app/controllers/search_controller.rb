@@ -133,6 +133,7 @@ class SearchController < ApplicationController
 
   def collectingDataFromResponseZing(response)
     _html_document = Nokogiri::HTML(response.body)
+    #1.solve class first-search-song
     #song's name
     _songName = _html_document.css('div[class=first-search-song] > h3 > a')
     puts _songName[0].text
@@ -144,19 +145,19 @@ class SearchController < ApplicationController
     puts _songPage
     #song's source
     _songSource =  _html_document.css('div[class = "first-search-song"] > script')[0].text
-    detachURLFromScript(_songSource)
+    _songSource = detachURLFromScript(_songSource)
+    @song_list.push(Song.new(_songName[0].text, _songSinger[0].text, "no lyric", _songPage, _songSource, "Zing MP3"))
     
-    #solve class first-search-song
-    #solve class content-block special-song
+    
+    #2.solve class content-block special-song
   end
 
   def detachURLFromScript(text)
-    puts text
     _startIndex =  text.index('href="')
     _endIndex = text.index('"', _startIndex+6)
 #    puts "#{text[_startIndex]}, #{_startIndex}"
 #    puts "#{text[_endIndex]}, #{_endIndex}"
-    puts text[_startIndex+6, _endIndex - _startIndex - 6]
+#    puts text[_startIndex+6, _endIndex - _startIndex - 6]
     return text[_startIndex+6, _endIndex - _startIndex - 6]
   end
 end

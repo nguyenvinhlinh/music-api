@@ -7,7 +7,7 @@ class Song
   @provider = ""
   attr_accessor :name, :artist, :lyric, :url_page, :url_source,  :provider
 
-  def def initialize(name, artist, lyric, page, source, provider)
+  def initialize(name, artist, lyric, page, source, provider)
     @name = name
     @artist = artist
     @lyric = lyric
