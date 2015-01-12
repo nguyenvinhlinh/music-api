@@ -128,10 +128,11 @@ class SearchController < ApplicationController
       _song_list +=  collectingDataFromResponseZing(_response)
     end
     for i in 0...numberOfResult
+      if _song_list[i].nil?
+        break
+      end
       @song_list << _song_list[i]
     end
-    
-    
   end
 
 
