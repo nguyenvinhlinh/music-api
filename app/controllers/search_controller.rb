@@ -32,7 +32,7 @@ class SearchController < ApplicationController
 
     if(_source_zingmp3 == true)
 #      @song_list = @song_list + (exploit_zing(_keyword))
-      mp3zing_sendRequest(_keyword, 20)
+      mp3zing_sendRequest(_keyword, 21)
     end
     if(_source_nhaccuatui == true)
     end
@@ -121,15 +121,22 @@ class SearchController < ApplicationController
       _number_of_page = numberOfResult / _numberOfResultPerPage +1
     end
     puts "Number of pages: #{_number_of_page}"
+    _song_list = Array.new
     for i in 1.._number_of_page
       _url = "http://mp3.zing.vn/tim-kiem/bai-hat.html?q=#{_keyword}&p=#{i}"
       _response = Net::HTTP.get_response(URI(_url))
-      collectingDataFromResponseZing(_response)
+      _song_list +=  collectingDataFromResponseZing(_response)
     end
+    for i in 0...numberOfResult
+      @song_list << _song_list[i]
+    end
+    
+    
   end
 
 
   def collectingDataFromResponseZing(response)
+    _song_list = Array.new
     _html_document = Nokogiri::HTML(response.body)
     #1.solve class first-search-song
     #song's name
@@ -144,7 +151,7 @@ class SearchController < ApplicationController
     #song's source
     _songSource =  _html_document.css('div[class = "first-search-song"] > script')[0].text
     _songSource = detachURLFromScript(_songSource)
-    @song_list.push(Song.new(_songName[0].text, _songSinger[0].text, "no lyric", _songPage, _songSource, "Zing MP3"))
+    _song_list.push(Song.new(_songName[0].text, _songSinger[0].text, "no lyric", _songPage, _songSource, "Zing MP3"))
     #2.solve class content-block special-song
     _contentBlock = _html_document.css('div.content-item.ie-fix')
     puts _contentBlock.size
@@ -153,10 +160,10 @@ class SearchController < ApplicationController
       _songSinger = _contentBlock[i].css('p > a')[0].text
       _songPage =  "http://mp3.zing.vn#{_contentBlock[i].css('h3 > a')[0]['href']}"
       _songSource = detachURLFromScript(_contentBlock[i].css('script')[0].text)
-      @song_list.push(Song.new(_songName, _songSinger, "no lyric", _songPage, _songSource, "Zing MP3"))
-      puts "song name: #{_songName}, singer: #{_songSinger}, page: #{_songPage}, source: #{_songSource}"
+      _song_list.push(Song.new(_songName, _songSinger, "no lyric", _songPage, _songSource, "Zing MP3"))
+      #puts "song name: #{_songName}, singer: #{_songSinger}, page: #{_songPage}, source: #{_songSource}"
     end
-    
+    return _song_list
     
   end
 
