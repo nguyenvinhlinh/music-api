@@ -1,8 +1,7 @@
 <h1>Music API</h1>
 <input id="keyword" type="text" name="keyword"/>
 <button id="search_button"type="button">Search </button>
-
-<% if @song_list != nil%>
+<% if @song_list.size != 0 %>
 <table border="1">
   <tr>
 	<th>Name</th>
@@ -17,7 +16,11 @@
 	<td><%= song.artist %></td>
 	<td><%= song.provider%></td>
 	<td><%= link_to 'link', song.url_page %></td>
+	<% if song.url_source == "#"%>
+	<td> copy right protection</td>
+	<% else %>
 	<td><%= link_to 'link', song.url_source %></td>
+	<% end %>
   </tr>
   <% end %>
 </table>

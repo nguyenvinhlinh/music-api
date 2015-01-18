@@ -4,41 +4,63 @@ require 'json'
 require 'net/http'
 class SearchController < ApplicationController
   #this part, program will take the input from GET 
-
   def init
-    _source_zingmp3 = false
-    _source_nhaccuatui = false
-    _keyword = params[:keyword]
-    @song_list = Array.new    
-    if _keyword == nil || _keyword == ""
-      Rails.logger.debug "---------------bug here true empty #{_keyword}"
+    @source_zingmp3 = false
+    @source_nhaccuatui = false
+    @song_list = Array.new 
+    @keyword = params[:keyword]
+    if @keyword == nil || @keyword == ""
+      Rails.logger.debug "---------------bug here true empty #{@keyword}"
       return
     end
     source = params[:source]
     if source.eql?("zing")
-      _source_zingmp3 = true
+      @source_zingmp3 = true
     elsif source.eql?("nhaccuatui")
-      _source_nhaccuatui = true
+      @source_nhaccuatui = true
     elsif source.eql?(nil)
-      _source_nhaccuatui = true
-      _source_zingmp3 = true
+      @source_nhaccuatui = true
+      @source_zingmp3 = true
     else
-      _source_nhaccuatui = false
-      _source_zingmp3 = false
+      @source_nhaccuatui = false
+      @source_zingmp3 = false
     end
-    Rails.logger.debug "Keyword: #{_keyword}"
-    Rails.logger.debug "Zing: #{_source_zingmp3}"
-    Rails.logger.debug "Nhaccuatui: #{_source_nhaccuatui}"
+    Rails.logger.debug "Keyword: #{@keyword}"
+    Rails.logger.debug "Zing: #{@source_zingmp3}"
+    Rails.logger.debug "Nhaccuatui: #{@source_nhaccuatui}"
 
-    if(_source_zingmp3 == true)
+    if(@source_zingmp3 == true)
 #      @song_list = @song_list + (exploit_zing(_keyword))
-      mp3zing_sendRequest(_keyword, 20)
+      mp3zing_sendRequest(@keyword, 20)
     end
-    if(_source_nhaccuatui == true)
+    if(@source_nhaccuatui == true)
     end
-
-    
   end
+
+  def api
+    @source_music = params[:source] #compulsory
+    @keyword = params[:keyword] #compulsory
+    @total= params[:number] #optional
+    @song_list = Array.new 
+    #source is invalid or valid
+    if @source_music.integer? == false
+      #param source wrong
+    if @total.integer? == false
+      @total = 20
+    end
+    if @keywork == nil || @keyworl.eql?("")
+      #no keywork provide
+      return
+    end
+    
+    case @source_music
+    when 1 #mp3zing
+      mp3zing_sendRequest(@keyword, @total)
+    else
+      #ping back to client that wrong music provider
+    end
+  end
+  
   #  return find_direct_url(_mp3_source_fake)
   # Rails.logger.debug "#{s}, #{i}, #{j}, #{mp3_source}"
 
