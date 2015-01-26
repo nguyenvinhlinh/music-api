@@ -10,7 +10,6 @@ class SearchController < ApplicationController
     @song_list = Array.new 
     @keyword = params[:keyword]
     if @keyword == nil || @keyword == ""
-      Rails.logger.debug "---------------bug here true empty #{@keyword}"
       return
     end
     source = params[:source]
@@ -25,18 +24,12 @@ class SearchController < ApplicationController
       @source_nhaccuatui = false
       @source_zingmp3 = false
     end
-    Rails.logger.debug "Keyword: #{@keyword}"
-    Rails.logger.debug "Zing: #{@source_zingmp3}"
-    Rails.logger.debug "Nhaccuatui: #{@source_nhaccuatui}"
-
     if(@source_zingmp3 == true)
-#      @song_list = @song_list + (exploit_zing(_keyword))
       mp3zing_sendRequest(@keyword, 20)
     end
     if(@source_nhaccuatui == true)
     end
   end
-
   def api
     @source_music = params[:source] #compulsory
     @keyword = params[:keyword] #compulsory
@@ -44,7 +37,9 @@ class SearchController < ApplicationController
     @song_list = Array.new 
     #source is invalid or valid
     if @source_music.integer? == false
-      #param source wrong
+      #param source wrong, denie query
+      return
+    end
     if @total.integer? == false
       @total = 20
     end
@@ -52,7 +47,6 @@ class SearchController < ApplicationController
       #no keywork provide
       return
     end
-    
     case @source_music
     when 1 #mp3zing
       mp3zing_sendRequest(@keyword, @total)
@@ -61,6 +55,7 @@ class SearchController < ApplicationController
     end
   end
   
+    
   #  return find_direct_url(_mp3_source_fake)
   # Rails.logger.debug "#{s}, #{i}, #{j}, #{mp3_source}"
 
@@ -92,7 +87,6 @@ class SearchController < ApplicationController
     for i in 1.._number_of_page
       _url = "http://mp3.zing.vn/tim-kiem/bai-hat.html?q=#{_keyword}&p=#{i}"
       _response = Net::HTTP.get_response(URI(URI.encode(_url)))
-
       _result = collectingDataFromResponseZing(_response)
       if _result != nil
         _song_list +=  _result
@@ -105,12 +99,9 @@ class SearchController < ApplicationController
       @song_list << _song_list[i]
     end
   end
-
-
   def collectingDataFromResponseZing(response)
     _song_list = Array.new
     _html_document = Nokogiri::HTML(response.body)
-    
     #1.solve class first-search-song
     #song's name
     _songName = _html_document.css('div[class=first-search-song] > h3 > a')
@@ -118,7 +109,6 @@ class SearchController < ApplicationController
       return
     end
     puts _songName[0].text
-    
     #song's singers
     _songSinger = _html_document.css('div[class=first-search-song] > p > a')
     puts _songSinger[0].text
@@ -141,16 +131,11 @@ class SearchController < ApplicationController
       _song_list.push(Song.new(_songName, _songSinger, "no lyric", _songPage, _songSource, "Zing MP3"))
       #puts "song name: #{_songName}, singer: #{_songSinger}, page: #{_songPage}, source: #{_songSource}"
     end
-    return _song_list
-    
+    return _song_list  
   end
   def detachURLFromScript(text)
     _startIndex =  text.index('href="')
     _endIndex = text.index('"', _startIndex+6)
-#    puts "#{text[_startIndex]}, #{_startIndex}"
-#    puts "#{text[_endIndex]}, #{_endIndex}"
-#    puts text[_startIndex+6, _endIndex - _startIndex - 6]
     return text[_startIndex+6, _endIndex - _startIndex - 6]
   end
 end
-
