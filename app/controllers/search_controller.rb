@@ -38,7 +38,7 @@ class SearchController < ApplicationController
     #source is invalid or valid
     #total number of song, by default is 20
     if @source_music == nil
-      render plain: "No source_music provide"
+      render json: "No source_music provide"
       return
     end
     if @total != nil
@@ -49,7 +49,7 @@ class SearchController < ApplicationController
     #keywork define
     if @keyword == nil || @keyword.eql?("")
       #no keywork provide
-      render plain: "No keyword provide #{@keyword}"
+      render json: "No keyword provide #{@keyword}"
       return
     end
     case @source_music
