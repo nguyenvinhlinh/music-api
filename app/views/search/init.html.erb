@@ -1,3 +1,4 @@
+
 <h1>Music API</h1>
 <input id="keyword" type="text" name="keyword"/>
 <button id="search_button"type="button">Search </button>
@@ -9,6 +10,7 @@
 	<th>Provider</th>
 	<th>Page</th>
 	<th>Source mp3</th>
+	<th>Play</th>
   </tr>
   <% @song_list.each do |song| %>
   <tr>
@@ -17,9 +19,18 @@
 	<td><%= song.provider%></td>
 	<td><%= link_to 'link', song.url_page %></td>
 	<% if song.url_source == "#"%>
-	<td> copy right protection</td>
+	<td> copyright protection</td>
 	<% else %>
 	<td><%= link_to 'link', song.url_source %></td>
+	<% end %>
+	
+	<% if song.url_source != "#"%>
+	<td>
+	  <audio controls>
+		<source src="<%= song.url_source%>" type="audio/mp3" />
+		Your browser does not support the audio element
+	  </audio> 
+	</td>
 	<% end %>
   </tr>
   <% end %>
