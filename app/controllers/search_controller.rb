@@ -7,7 +7,7 @@ class SearchController < ApplicationController
   def init
     @source_zingmp3 = false
     @source_nhaccuatui = false
-    @song_list = Array.new 
+    @song_list = Array.new
     @keyword = params[:keyword]
     if @keyword == nil || @keyword == ""
       return
@@ -36,29 +36,33 @@ class SearchController < ApplicationController
     @total= params[:number] #optional
     @song_list = Array.new 
     #source is invalid or valid
-    if @source_music.integer? == false
-      #param source wrong, denie query
+    #total number of song, by default is 20
+    if @source_music == nil
+      render plain: "No source_music provide"
       return
     end
-    if @total.integer? == false
+    if @total != nil
+      @total = @total.to_i
+    else
       @total = 20
     end
-    if @keywork == nil || @keyworl.eql?("")
+    #keywork define
+    if @keyword == nil || @keyword.eql?("")
       #no keywork provide
+      render plain: "No keyword provide #{@keyword}"
       return
     end
     case @source_music
-    when 1 #mp3zing
+    when "1" #mp3zing
       mp3zing_sendRequest(@keyword, @total)
+      
     else
       #ping back to client that wrong music provider
     end
-  end
-  
+#    render plain: "[API] keyword: #{@keyword}, source: #{@source_music}, total: #{@total}"
     
-  #  return find_direct_url(_mp3_source_fake)
-  # Rails.logger.debug "#{s}, #{i}, #{j}, #{mp3_source}"
-
+    render json: @song_list
+  end 
   def find_direct_url(url)
     _uri = URI(URI.encode(url))
     _response = Net::HTTP.get_response(_uri)
@@ -81,7 +85,7 @@ class SearchController < ApplicationController
     if (numberOfResult % _numberOfResultPerPage == 0)
       _number_of_page = numberOfResult / _numberOfResultPerPage
     else
-      _number_of_page = numberOfResult / _numberOfResultPerPage +1
+      _number_of_page = numberOfResult / _numberOfResultPerPage + 1
     end
     _song_list = Array.new
     for i in 1.._number_of_page
@@ -124,18 +128,22 @@ class SearchController < ApplicationController
     puts _contentBlock.size
     for i in 0..._contentBlock.size
       _songName = _contentBlock[i].css('h3 > a')[0].text
-      _songSinger = _contentBlock[i].css('p > a')[0].text
+      begin
+        _songSinger = _contentBlock[i].css('p > a')[0].text
+      rescue
+        _songSinger = "unknown"
+      end
       _songPage =  "http://mp3.zing.vn#{_contentBlock[i].css('h3 > a')[0]['href']}"
       _songSource = detachURLFromScript(_contentBlock[i].css('script')[0].text)
       #_songSource = find_direct_url(_songSource)
       _song_list.push(Song.new(_songName, _songSinger, "no lyric", _songPage, _songSource, "Zing MP3"))
       #puts "song name: #{_songName}, singer: #{_songSinger}, page: #{_songPage}, source: #{_songSource}"
     end
-    return _song_list  
+    return _song_list
   end
   def detachURLFromScript(text)
     _startIndex =  text.index('href="')
     _endIndex = text.index('"', _startIndex+6)
     return text[_startIndex+6, _endIndex - _startIndex - 6]
-  end
+  end  
 end
