@@ -30,6 +30,9 @@ class SearchController < ApplicationController
     if(@source_nhaccuatui == true)
     end
   end
+  def apindex
+    
+  end
   def api
     @source_music = params[:source] #compulsory
     @keyword = params[:keyword] #compulsory
@@ -38,7 +41,7 @@ class SearchController < ApplicationController
     #source is invalid or valid
     #total number of song, by default is 20
     if @source_music == nil
-      render json: "No source_music provide"
+      render json: "No source provide"
       return
     end
     if @total != nil
@@ -123,7 +126,7 @@ class SearchController < ApplicationController
     _songSource =  _html_document.css('div[class = "first-search-song"] > script')[0].text
     _songSource = detachURLFromScript(_songSource)
     _song_list.push(Song.new(_songName[0].text, _songSinger[0].text, "no lyric", _songPage, _songSource, "Zing MP3"))
-    #2.solve class content-block special-song
+    #2.solve class content-block special-sonasdasdg
     _contentBlock = _html_document.css('div.content-item.ie-fix')
     puts _contentBlock.size
     for i in 0..._contentBlock.size

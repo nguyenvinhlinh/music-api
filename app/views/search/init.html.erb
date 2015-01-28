@@ -1,9 +1,11 @@
 <h1>Music API</h1>
+<%= link_to 'Don\'t know how to use API', controller: "search", action: "apindex"%>
 <%= form_tag("/search", method: "get") do %>
   <%= label_tag(:keyword, "Search for:") %>
   <%= text_field_tag(:keyword) %>
   <%= submit_tag("Search") %>
-<% end %>
+  <% end %>
+
 <% if @song_list.size != 0 %>
 <table border="1">
   <tr>
@@ -28,7 +30,7 @@
 	
 	<% if song.url_source != "#"%>
 	<td>
-	  <audio controls>
+	  <audio controls preload="none">
 		<source src="<%= song.url_source%>" type="audio/mp3" />
 		Your browser does not support the audio element
 	  </audio> 

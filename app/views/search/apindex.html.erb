@@ -1,0 +1,22 @@
+<h1>This is guide to work with music-api</h1>
+<p>
+1.  Request should be sent to http://silverlink.herokuapp.com/api, and server
+will return a result in JSON object <br />
+2. There are three parameters to query
+<ul>
+  <li>source: the source of music (zing mp3 = 1) - this is compulsory</li>
+  <li>keyword: the keyword - this is compulsory</li>
+  <li>number: the expect number of song - this is optional</li>
+</ul>
+
+3. Example <br />
+<a href="http://silverlink.herokuapp.com/api?source=1&keyword=em&number=5">http://silverlink.herokuapp.com/api?source=1&keyword=em&number=5</a><br />
+<a href="http://silverlink.herokuapp.com/api?source=1&keyword=em yeu&number=5">http://silverlink.herokuapp.com/api?source=1&keyword=em yeu&number=5</a> <br />
+<a href="http://silverlink.herokuapp.com/api?source=1&keyword=em cua ngay hom
+		 qua">http://silverlink.herokuapp.com/api?source=1&keyword=em cua ngay
+  hom qua</a> <br />
+4. Author: Nguyen Vinh Linh 2015 <br />
+</p>
+
+<%= link_to 'homepage', controller: "search", action: "init"%>
+
