@@ -84,6 +84,9 @@ class SearchController < ApplicationController
     return _uri.to_s
   end
   def mp3zing_sendRequest(query, numberOfResult = 20)
+    if numberOfResult > 60
+      numberOfResult = 60
+    end
     _numberOfResultPerPage = 20
     _keyword = query.gsub(' ', '+')
 #    puts "Number of expected results: #{numberOfResult}"
@@ -153,6 +156,10 @@ class SearchController < ApplicationController
     return text[_startIndex+6, _endIndex - _startIndex - 6]
   end  
   def nhaccuatui_sendRequest(query, numberOfResult = 37)
+    if numberOfResult > 111
+      numberOfResult = 111
+    end
+    
     _numberOfResultPerPage = 37
     _keyword = query.gsub(' ', '+')
     _song_list = Array.new
