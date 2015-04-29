@@ -1,2 +1,0 @@
-== README
-This program is an music api. It exploit song from zing mp3 and nhaccuatui
