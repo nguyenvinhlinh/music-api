@@ -1,3 +1,4 @@
+## Dự án đã dừng hoạt động
 ## Giới Thiệu 
 Dự án này là mã nguồn mở. Thời gian này, chỉ có hai nguồn được phát triển trước
 đó là ZingMp3 và Nhaccuatui, các nguồn nhạc sẽ được phát triển tùy theo nhu cầu
